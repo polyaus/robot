@@ -13,7 +13,7 @@ class Directions(enum.Enum):
 
 class RobotHod:
     def __init__(self, x, y):
-        if not str(x).isdigit() or not str(y).isdigit():
+        if not isinstance(x, int) or not isinstance(y, int):
             raise NotValidXError()
 
         self.x = x

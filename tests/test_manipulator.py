@@ -1,5 +1,31 @@
+import pytest
+
+from robot.exceptions import NotValidRobotError, NotValidCoordinateTypeError
 from robot.manipulator import Manipulator
 from robot.robot import RobotHod
+
+
+def test_manipulator_wrong_base_state():
+    with pytest.raises(NotValidRobotError):
+        Manipulator('robot', [0, 0])
+
+
+def test_manipulator_type_error():
+    robo = RobotHod(0, 0)
+    with pytest.raises(NotValidCoordinateTypeError):
+        Manipulator(robo, 'az')
+
+
+def test_manipulator_type_error_for_x():
+    robo = RobotHod(0, 0)
+    with pytest.raises(NotValidCoordinateTypeError):
+        Manipulator(robo, ['z', 0])
+
+
+def test_manipulator_type_error_for_y():
+    robo = RobotHod(0, 0)
+    with pytest.raises(NotValidCoordinateTypeError):
+        Manipulator(robo, [0, 'k'])
 
 
 def test_manipulator_base_state():
@@ -33,3 +59,10 @@ def test_manipulator_go_from_5_2_to_15_9():
     assert robo.x == 15
     assert robo.y == 9
 
+
+def test_manipulator_go_from_5_2_to_5_9():
+    robo = RobotHod(5, 2)
+    man = Manipulator(robo, [15, 9])
+    man.run()
+    assert robo.x == 15
+    assert robo.y == 9
