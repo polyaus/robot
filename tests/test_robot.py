@@ -1,3 +1,6 @@
+import pytest
+
+from robot.exceptions import NotValidXError, NotValidDirectionError
 from robot.robot import RobotHod, Directions
 
 
@@ -138,3 +141,41 @@ def test_robot_turn_right_twice_and_go_next_and_turn_left_and_go_back_twice():
     assert robo.direction == Directions.RIGHT.value
     assert robo.x == -2
     assert robo.y == -1
+
+
+def test_robot_wrong_x():
+    with pytest.raises(NotValidXError):
+        robo = RobotHod('g', 0)
+
+
+def test_robot_wrong_y():
+    with pytest.raises(NotValidXError):
+        robo = RobotHod(0, 'g')
+
+
+def test_robot_turn_right_wrong_direction():
+    robo = RobotHod(0, 0)
+    robo.direction = 'error'
+    with pytest.raises(NotValidDirectionError):
+        robo.turn_right()
+
+
+def test_robot_turn_left_wrong_direction():
+    robo = RobotHod(0, 0)
+    robo.direction = 'error'
+    with pytest.raises(NotValidDirectionError):
+        robo.turn_left()
+
+
+def test_robot_go_next_wrong_direction():
+    robo = RobotHod(0, 0)
+    robo.direction = 'error'
+    with pytest.raises(NotValidDirectionError):
+        robo.go_next()
+
+
+def test_robot_go_back_wrong_direction():
+    robo = RobotHod(0, 0)
+    robo.direction = 'error'
+    with pytest.raises(NotValidDirectionError):
+        robo.go_back()
