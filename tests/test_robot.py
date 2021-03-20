@@ -23,16 +23,13 @@ class TestRobot:
         assert self.robo.direction == Directions.DOWN.value
 
     def test_robot_turn_right_third(self):
-        self.robo.turn_right()
-        self.robo.turn_right()
-        self.robo.turn_right()
+        for _ in range(3):
+            self.robo.turn_right()
         assert self.robo.direction == Directions.LEFT.value
 
     def test_robot_turn_right_four(self):
-        self.robo.turn_right()
-        self.robo.turn_right()
-        self.robo.turn_right()
-        self.robo.turn_right()
+        for _ in range(4):
+            self.robo.turn_right()
         assert self.robo.direction == Directions.UP.value
 
     def test_robot_turn_left(self):
@@ -45,16 +42,13 @@ class TestRobot:
         assert self.robo.direction == Directions.DOWN.value
 
     def test_robot_turn_left_third(self):
-        self.robo.turn_left()
-        self.robo.turn_left()
-        self.robo.turn_left()
+        for _ in range(3):
+            self.robo.turn_left()
         assert self.robo.direction == Directions.RIGHT.value
 
     def test_robot_turn_left_four(self):
-        self.robo.turn_left()
-        self.robo.turn_left()
-        self.robo.turn_left()
-        self.robo.turn_left()
+        for _ in range(4):
+            self.robo.turn_left()
         assert self.robo.direction == Directions.UP.value
 
     def test_robot_go_next(self):
@@ -76,9 +70,8 @@ class TestRobot:
         assert self.robo.x == 0
 
     def test_robot_turn_right_third_and_go_next(self):
-        self.robo.turn_right()
-        self.robo.turn_right()
-        self.robo.turn_right()
+        for _ in range(3):
+            self.robo.turn_right()
         self.robo.go_next()
         assert self.robo.direction == Directions.LEFT.value
         assert self.robo.x == -1
