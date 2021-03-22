@@ -12,13 +12,14 @@ class Directions(enum.Enum):
 
 
 class RobotHod:
-    def __init__(self, x, y):
+    def __init__(self, x, y, schedule=None):
         if not isinstance(x, int) or not isinstance(y, int):
             raise NotValidXError()
 
         self.x = x
         self.y = y
         self.direction = Directions.UP.value
+        self.schedule = schedule
 
     def turn_right(self):
         if self.direction == Directions.UP.value:
