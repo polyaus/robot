@@ -1,6 +1,6 @@
 import enum
 
-from robot.exceptions import NotValidXError, NotValidDirectionError
+from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError
 
 
 @enum.unique
@@ -22,6 +22,9 @@ class RobotHod:
         self.schedule = schedule
 
     def turn_right(self):
+        if self.schedule is not None and not self.schedule.validate():
+            raise RobotOffError()
+
         if self.direction == Directions.UP.value:
             self.direction = Directions.RIGHT.value
         elif self.direction == Directions.RIGHT.value:
@@ -34,6 +37,9 @@ class RobotHod:
             raise NotValidDirectionError()
 
     def turn_left(self):
+        if self.schedule is not None and not self.schedule.validate():
+            raise RobotOffError()
+
         if self.direction == Directions.UP.value:
             self.direction = Directions.LEFT.value
         elif self.direction == Directions.LEFT.value:
@@ -46,6 +52,9 @@ class RobotHod:
             raise NotValidDirectionError()
 
     def go_next(self):
+        if self.schedule is not None and not self.schedule.validate():
+            raise RobotOffError()
+
         if self.direction == Directions.UP.value:
             self.y += 1
         elif self.direction == Directions.LEFT.value:
@@ -58,6 +67,9 @@ class RobotHod:
             raise NotValidDirectionError()
 
     def go_back(self):
+        if self.schedule is not None and not self.schedule.validate():
+            raise RobotOffError()
+
         if self.direction == Directions.UP.value:
             self.y -= 1
         elif self.direction == Directions.LEFT.value:

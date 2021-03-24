@@ -2,6 +2,10 @@ class RobotError(Exception):
     pass
 
 
+class RobotOffError(RobotError):
+    pass
+
+
 class NotValidXError(RobotError):
     pass
 
@@ -24,5 +28,3 @@ class NotValidCoordinateError(ManipulatorError):
 
 class NotValidCoordinateTypeError(NotValidCoordinateError):
     pass
-
-
