@@ -1,7 +1,11 @@
-import pytest
+from unittest.mock import patch
 
-from robot.exceptions import NotValidXError, NotValidDirectionError
+import pytest
+from freezegun import freeze_time
+
+from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError
 from robot.robot import RobotHod, Directions
+from robot.schedule import Schedule
 
 
 class TestRobot:
@@ -135,3 +139,29 @@ class TestRobot:
         self.robo.direction = 'error'
         with pytest.raises(NotValidDirectionError):
             self.robo.go_back()
+
+    def test_robot_on(self):
+        schedule = Schedule(rule='Holiday')
+        with freeze_time('2021-03-26'):
+            with patch.object(self.robo, 'schedule', new=schedule):
+                self.robo.turn_right()
+                self.robo.turn_left()
+                self.robo.go_next()
+                self.robo.go_back()
+        assert self.robo.x == 0
+        assert self.robo.y == 0
+
+    def test_robot_off(self):
+        schedule = Schedule(rule='Holiday')
+        with freeze_time('2021-03-27'):
+            with patch.object(self.robo, 'schedule', new=schedule):
+                with pytest.raises(RobotOffError):
+                    self.robo.turn_right()
+                with pytest.raises(RobotOffError):
+                    self.robo.turn_left()
+                with pytest.raises(RobotOffError):
+                    self.robo.go_next()
+                with pytest.raises(RobotOffError):
+                    self.robo.go_back()
+        assert self.robo.x == 0
+        assert self.robo.y == 0
