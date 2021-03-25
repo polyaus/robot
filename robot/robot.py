@@ -1,6 +1,6 @@
 import enum
 
-from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError
+from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError, NotValidYError
 
 
 @enum.unique
@@ -13,8 +13,10 @@ class Directions(enum.Enum):
 
 class RobotHod:
     def __init__(self, x, y, schedule=None):
-        if not isinstance(x, int) or not isinstance(y, int):
+        if not isinstance(x, int):
             raise NotValidXError()
+        if not isinstance(y, int):
+            raise NotValidYError()
 
         self.x = x
         self.y = y
