@@ -10,6 +10,10 @@ class NotValidXError(RobotError):
     pass
 
 
+class NotValidYError(RobotError):
+    pass
+
+
 class NotValidDirectionError(RobotError):
     pass
 

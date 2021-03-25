@@ -3,7 +3,7 @@ from unittest.mock import patch
 import pytest
 from freezegun import freeze_time
 
-from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError
+from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError, NotValidYError
 from robot.robot import RobotHod, Directions
 from robot.schedule import Schedule
 
@@ -117,28 +117,28 @@ class TestRobot:
             RobotHod('g', 0)
 
     def test_robot_wrong_y(self):
-        with pytest.raises(NotValidXError):
+        with pytest.raises(NotValidYError):
             RobotHod(0, 'g')
 
     def test_robot_turn_right_wrong_direction(self):
-        self.robo.direction = 'error'
         with pytest.raises(NotValidDirectionError):
-            self.robo.turn_right()
+            with patch.object(self.robo, 'direction', new='error'):
+                self.robo.turn_right()
 
     def test_robot_turn_left_wrong_direction(self):
-        self.robo.direction = 'error'
         with pytest.raises(NotValidDirectionError):
-            self.robo.turn_left()
+            with patch.object(self.robo, 'direction', new='error'):
+                self.robo.turn_left()
 
     def test_robot_go_next_wrong_direction(self):
-        self.robo.direction = 'error'
         with pytest.raises(NotValidDirectionError):
-            self.robo.go_next()
+            with patch.object(self.robo, 'direction', new='error'):
+                self.robo.go_next()
 
     def test_robot_go_back_wrong_direction(self):
-        self.robo.direction = 'error'
         with pytest.raises(NotValidDirectionError):
-            self.robo.go_back()
+            with patch.object(self.robo, 'direction', new='error'):
+                self.robo.go_back()
 
     def test_robot_on(self):
         schedule = Schedule(rule='Holiday')
