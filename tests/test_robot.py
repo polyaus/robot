@@ -17,85 +17,51 @@ class TestRobot:
         assert self.robo.y == 0
         assert self.robo.direction == Directions.UP.value
 
-    def test_robot_turn_right(self):
-        self.robo.turn_right()
-        assert self.robo.direction == Directions.RIGHT.value
-
-    def test_robot_turn_right_twice(self):
-        self.robo.turn_right()
-        self.robo.turn_right()
-        assert self.robo.direction == Directions.DOWN.value
-
-    def test_robot_turn_right_third(self):
-        for _ in range(3):
+    @pytest.mark.parametrize("turn_count,direction", [
+        (1, Directions.RIGHT.value),
+        (2, Directions.DOWN.value),
+        (3, Directions.LEFT.value),
+        (4, Directions.UP.value),
+    ])
+    def test_robot_turn_right(self, turn_count, direction):
+        for _ in range(turn_count):
             self.robo.turn_right()
-        assert self.robo.direction == Directions.LEFT.value
+        assert self.robo.direction == direction
 
-    def test_robot_turn_right_four(self):
-        for _ in range(4):
-            self.robo.turn_right()
-        assert self.robo.direction == Directions.UP.value
-
-    def test_robot_turn_left(self):
-        self.robo.turn_left()
-        assert self.robo.direction == Directions.LEFT.value
-
-    def test_robot_turn_left_twice(self):
-        self.robo.turn_left()
-        self.robo.turn_left()
-        assert self.robo.direction == Directions.DOWN.value
-
-    def test_robot_turn_left_third(self):
-        for _ in range(3):
+    @pytest.mark.parametrize("turn_count,direction", [
+        (1, Directions.LEFT.value),
+        (2, Directions.DOWN.value),
+        (3, Directions.RIGHT.value),
+        (4, Directions.UP.value),
+    ])
+    def test_robot_turn_left(self, turn_count, direction):
+        for _ in range(turn_count):
             self.robo.turn_left()
-        assert self.robo.direction == Directions.RIGHT.value
+        assert self.robo.direction == direction
 
-    def test_robot_turn_left_four(self):
-        for _ in range(4):
-            self.robo.turn_left()
-        assert self.robo.direction == Directions.UP.value
+    @pytest.mark.parametrize('method,x,y', [
+        ('go_next', 0, 1),
+        ('go_back', 0, -1),
+    ])
+    def test_robot_go_and_check_x_y(self, method, x, y):
+        getattr(self.robo, method)()
+        assert self.robo.x == x
+        assert self.robo.y == y
 
-    def test_robot_go_next(self):
-        self.robo.go_next()
-        assert self.robo.x == 0
-        assert self.robo.y == 1
-
-    def test_robot_go_back(self):
-        self.robo.go_back()
-        assert self.robo.x == 0
-        assert self.robo.y == -1
-
-    def test_robot_turn_right_twice_and_go_next(self):
-        self.robo.turn_right()
-        self.robo.turn_right()
-        self.robo.go_next()
-        assert self.robo.direction == Directions.DOWN.value
-        assert self.robo.y == -1
-        assert self.robo.x == 0
-
-    def test_robot_turn_right_third_and_go_next(self):
-        for _ in range(3):
-            self.robo.turn_right()
-        self.robo.go_next()
-        assert self.robo.direction == Directions.LEFT.value
-        assert self.robo.x == -1
-        assert self.robo.y == 0
-
-    def test_robot_turn_left_and_go_back_twice(self):
-        self.robo.turn_left()
-        self.robo.go_back()
-        self.robo.go_back()
-        assert self.robo.direction == Directions.LEFT.value
-        assert self.robo.x == 2
-        assert self.robo.y == 0
-
-    def test_robot_turn_left_twice_and_go_back(self):
-        self.robo.turn_left()
-        self.robo.turn_left()
-        self.robo.go_back()
-        assert self.robo.direction == Directions.DOWN.value
-        assert self.robo.x == 0
-        assert self.robo.y == 1
+    @pytest.mark.parametrize('turn_count,method,turn_count_2,method_2,direction,x,y', [
+        (2, 'turn_right', 1, 'go_next', Directions.DOWN.value, 0, -1),
+        (3, 'turn_right', 1, 'go_next', Directions.LEFT.value, -1, 0),
+        (1, 'turn_left', 2, 'go_back', Directions.LEFT.value, 2, 0),
+        (2, 'turn_left', 1, 'go_back', Directions.DOWN.value, 0, 1),
+    ])
+    def test_robot_mix_actions(self, turn_count, method, turn_count_2, method_2, direction, x, y):
+        for _ in range(turn_count):
+            getattr(self.robo, method)()
+        for _ in range(turn_count_2):
+            getattr(self.robo, method_2)()
+        assert self.robo.direction == direction
+        assert self.robo.x == x
+        assert self.robo.y == y
 
     def test_robot_turn_right_twice_and_go_next_and_turn_left_and_go_back_twice(self):
         self.robo.turn_right()
@@ -112,33 +78,24 @@ class TestRobot:
         assert self.robo.x == -2
         assert self.robo.y == -1
 
-    def test_robot_wrong_x(self):
-        with pytest.raises(NotValidXError):
-            RobotHod('g', 0)
+    @pytest.mark.parametrize('exc,x,y', [
+        (NotValidXError, 'g', 0),
+        (NotValidYError, 0, 'g'),
+    ])
+    def test_robot_wrong_x_and_y(self, exc, x, y):
+        with pytest.raises(exc):
+            RobotHod(x, y)
 
-    def test_robot_wrong_y(self):
-        with pytest.raises(NotValidYError):
-            RobotHod(0, 'g')
-
-    def test_robot_turn_right_wrong_direction(self):
+    @pytest.mark.parametrize('method', [
+        'turn_right',
+        'turn_left',
+        'go_next',
+        'go_back',
+    ])
+    def test_robot_turn_right_wrong_direction(self, method):
         with pytest.raises(NotValidDirectionError):
             with patch.object(self.robo, 'direction', new='error'):
-                self.robo.turn_right()
-
-    def test_robot_turn_left_wrong_direction(self):
-        with pytest.raises(NotValidDirectionError):
-            with patch.object(self.robo, 'direction', new='error'):
-                self.robo.turn_left()
-
-    def test_robot_go_next_wrong_direction(self):
-        with pytest.raises(NotValidDirectionError):
-            with patch.object(self.robo, 'direction', new='error'):
-                self.robo.go_next()
-
-    def test_robot_go_back_wrong_direction(self):
-        with pytest.raises(NotValidDirectionError):
-            with patch.object(self.robo, 'direction', new='error'):
-                self.robo.go_back()
+                getattr(self.robo, method)()
 
     def test_robot_on(self):
         schedule = Schedule(rule='Holiday')
@@ -151,17 +108,17 @@ class TestRobot:
         assert self.robo.x == 0
         assert self.robo.y == 0
 
-    def test_robot_off(self):
+    @pytest.mark.parametrize('method', [
+        'turn_right',
+        'turn_left',
+        'go_next',
+        'go_back',
+    ])
+    def test_robot_off(self, method):
         schedule = Schedule(rule='Holiday')
         with freeze_time('2021-03-27'):
             with patch.object(self.robo, 'schedule', new=schedule):
                 with pytest.raises(RobotOffError):
-                    self.robo.turn_right()
-                with pytest.raises(RobotOffError):
-                    self.robo.turn_left()
-                with pytest.raises(RobotOffError):
-                    self.robo.go_next()
-                with pytest.raises(RobotOffError):
-                    self.robo.go_back()
+                    getattr(self.robo, method)()
         assert self.robo.x == 0
         assert self.robo.y == 0

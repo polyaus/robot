@@ -28,7 +28,7 @@ class Manipulator:
                 self.robot.go_back()
         if y != self.robot.y:
             while self.robot.direction != Directions.UP.value:
-                self.robot.turn_right()
+                self.robot.turn_left()
             while y > self.robot.y:
                 self.robot.go_next()
             while y < self.robot.y:

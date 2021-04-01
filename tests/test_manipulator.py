@@ -13,46 +13,41 @@ class TestManipulator:
         with pytest.raises(NotValidRobotError):
             Manipulator('robot', [0, 0])
 
-    def test_manipulator_type_error(self):
+    @pytest.mark.parametrize('coordinate', [
+        ('az',),
+        (['z', 0],),
+        ([0, 'k'],),
+    ])
+    def test_manipulator_type_error(self, coordinate):
         with pytest.raises(NotValidCoordinateTypeError):
-            Manipulator(self.robo, 'az')
+            Manipulator(self.robo, coordinate)
 
-    def test_manipulator_type_error_for_x(self):
-        with pytest.raises(NotValidCoordinateTypeError):
-            Manipulator(self.robo, ['z', 0])
+    @pytest.mark.parametrize('coordinates,result_x,result_y', [
+        ([0, 0], 0, 0,),
+        ([5, 9], 5, 9,),
+        ([-3, -19], -3, -19,),
+    ])
+    def test_manipulator_change_coordinates(self, coordinates, result_x, result_y):
+        Manipulator(self.robo, coordinates).run()
+        assert self.robo.x == result_x
+        assert self.robo.y == result_y
 
-    def test_manipulator_type_error_for_y(self):
-        with pytest.raises(NotValidCoordinateTypeError):
-            Manipulator(self.robo, [0, 'k'])
+    @pytest.mark.parametrize('point_robo_x,point_robo_y,points_manipulator,final_x,final_y', [
+        (5, 2, [15, 9], 15, 9,),
+        (5, 2, [5, 9], 5, 9,),
+    ])
+    def test_manipulator_go_from_5_2_to_15_9(self, point_robo_x, point_robo_y, points_manipulator, final_x, final_y):
+        robo = RobotHod(point_robo_x, point_robo_y)
+        Manipulator(robo, points_manipulator).run()
+        assert robo.x == final_x
+        assert robo.y == final_y
 
-    def test_manipulator_base_state(self):
-        man = Manipulator(self.robo, [0, 0])
+    def test_manipulator_go_from_0_0_to_5_3_run_turn_right_turn_left(self, mocker):
+        robo = RobotHod(0, 0)
+        man = Manipulator(robo, [5, 3])
+
+        spy_right = mocker.spy(robo, 'turn_right')
+        spy_left = mocker.spy(robo, 'turn_left')
         man.run()
-        assert self.robo.x == 0
-        assert self.robo.y == 0
-
-    def test_manipulator_go_to_5_9(self):
-        man = Manipulator(self.robo, [5, 9])
-        man.run()
-        assert self.robo.x == 5
-        assert self.robo.y == 9
-
-    def test_manipulator_go_to_min3_min19(self):
-        man = Manipulator(self.robo, [-3, -19])
-        man.run()
-        assert self.robo.x == -3
-        assert self.robo.y == -19
-
-    def test_manipulator_go_from_5_2_to_15_9(self):
-        robo = RobotHod(5, 2)
-        man = Manipulator(robo, [15, 9])
-        man.run()
-        assert robo.x == 15
-        assert robo.y == 9
-
-    def test_manipulator_go_from_5_2_to_5_9(self):
-        robo = RobotHod(5, 2)
-        man = Manipulator(robo, [15, 9])
-        man.run()
-        assert robo.x == 15
-        assert robo.y == 9
+        spy_right.assert_has_calls([mocker.call()])
+        spy_left.assert_has_calls([mocker.call()])
