@@ -8,4 +8,3 @@ print(robo.x, robo.y)
 man = Manipulator(robo, [5, 3])
 man.run()
 print(robo.x, robo.y)
-
