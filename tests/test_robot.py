@@ -78,12 +78,12 @@ class TestRobot:
         assert self.robo.x == -2
         assert self.robo.y == -1
 
-    @pytest.mark.parametrize('x,y', [
-        ('g', 0,),
-        (0, 'g',),
+    @pytest.mark.parametrize('exc,x,y', [
+        (NotValidXError, 'g', 0),
+        (NotValidYError, 0, 'g'),
     ])
-    def test_robot_wrong_x_and_y(self, x, y):
-        with pytest.raises(NotValidXError):
+    def test_robot_wrong_x_and_y(self, exc, x, y):
+        with pytest.raises(exc):
             RobotHod(x, y)
 
     @pytest.mark.parametrize('method', [
