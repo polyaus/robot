@@ -1,5 +1,9 @@
+import logging
+
 from robot.exceptions import NotValidRobotError, NotValidCoordinateTypeError
 from robot.robot import Directions, RobotHod
+
+logger = logging.getLogger(__name__)
 
 
 class Manipulator:
@@ -15,6 +19,8 @@ class Manipulator:
 
         self.robot = robot
         self.coordinate = coordinate
+
+        logger.info('Manipulator init with robot=%s, coordinate=%s', robot, coordinate)
 
     def run(self):
         x = self.coordinate[0]
@@ -33,3 +39,5 @@ class Manipulator:
                 self.robot.go_next()
             while y < self.robot.y:
                 self.robot.go_back()
+
+        logger.info('Manipulator work is done: %s', self.robot)

@@ -1,6 +1,9 @@
 import enum
+import logging
 
 from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError, NotValidYError
+
+logger = logging.getLogger(__name__)
 
 
 @enum.unique
@@ -23,6 +26,11 @@ class RobotHod:
         self.direction = Directions.UP.value
         self.schedule = schedule
 
+        logger.info('RobotHod init with x=%s, y=%s, direction=%s, schedule=%s', x, y, self.direction, schedule)
+
+    def __str__(self):
+        return f'RobotHod(x={self.x}, y={self.y}, schedule={self.schedule})'
+
     def turn_right(self):
         if self.schedule is not None and not self.schedule.validate():
             raise RobotOffError()
@@ -37,6 +45,8 @@ class RobotHod:
             self.direction = Directions.UP.value
         else:
             raise NotValidDirectionError()
+
+        logger.info('RobotHod turn_right new direction=%s', self.direction)
 
     def turn_left(self):
         if self.schedule is not None and not self.schedule.validate():
@@ -53,6 +63,8 @@ class RobotHod:
         else:
             raise NotValidDirectionError()
 
+        logger.info('RobotHod turn_left new direction=%s', self.direction)
+
     def go_next(self):
         if self.schedule is not None and not self.schedule.validate():
             raise RobotOffError()
@@ -68,6 +80,8 @@ class RobotHod:
         else:
             raise NotValidDirectionError()
 
+        logger.info('RobotHod go_next new x=%s. new y=%s', self.x, self.y)
+
     def go_back(self):
         if self.schedule is not None and not self.schedule.validate():
             raise RobotOffError()
@@ -82,3 +96,5 @@ class RobotHod:
             self.x -= 1
         else:
             raise NotValidDirectionError()
+
+        logger.info('RobotHod go_back new x=%s. new y=%s', self.x, self.y)
