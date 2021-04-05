@@ -5,7 +5,7 @@ from freezegun import freeze_time
 
 from robot.exceptions import NotValidXError, NotValidDirectionError, RobotOffError, NotValidYError
 from robot.robot import RobotHod, Directions
-from robot.schedule import Schedule
+from robot.schedule import HolidaySchedule
 
 
 class TestRobot:
@@ -98,7 +98,7 @@ class TestRobot:
                 getattr(self.robo, method)()
 
     def test_robot_on(self):
-        schedule = Schedule(rule='Holiday')
+        schedule = HolidaySchedule()
         with freeze_time('2021-03-26'):
             with patch.object(self.robo, 'schedule', new=schedule):
                 self.robo.turn_right()
@@ -115,10 +115,13 @@ class TestRobot:
         'go_back',
     ])
     def test_robot_off(self, method):
-        schedule = Schedule(rule='Holiday')
+        schedule = HolidaySchedule()
         with freeze_time('2021-03-27'):
             with patch.object(self.robo, 'schedule', new=schedule):
                 with pytest.raises(RobotOffError):
                     getattr(self.robo, method)()
         assert self.robo.x == 0
         assert self.robo.y == 0
+
+    def test_robot_object_to_str(self):
+        assert str(self.robo) == 'RobotHod(x=0, y=0, schedule=None)'
