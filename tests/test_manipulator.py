@@ -17,6 +17,7 @@ class TestManipulator:
         ('az',),
         (['z', 0],),
         ([0, 'k'],),
+        (['f', 'z'])
     ])
     def test_manipulator_type_error(self, coordinate):
         with pytest.raises(NotValidCoordinateTypeError):
